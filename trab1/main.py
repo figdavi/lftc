@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from pathlib import Path
 
 
 class Automato:
@@ -116,51 +117,56 @@ def eliminar_epsilon(A: Automato) -> Automato:
     )
 
 
-def ler_automatos(nome_arquivo: str) -> list[Automato]:
+def ler_automatos(nome_arquivo: Path) -> dict[str, Automato]:
     """
     Lê dos autômatos em json para um conjunto de Automato()
     """
     with open(nome_arquivo, "r") as arq:
         dados = json.load(arq)
 
-    automatos: list[Automato] = [
-        # json: [[1, "0", 2], [2, "1", 1]] -> python: {(1, "0", 2), (2, "1", 1)}
-        Automato(
+    automatos: dict[str, Automato] = {
+        nome: Automato(
             a["estados"],
             a["alfabeto"],
             a["inicial"],
             a["finais"],
             {tuple(transicao) for transicao in a["transicoes"]},
         )
-        for a in dados
-    ]
+        for nome, a in dados.items()
+    }
 
     return automatos
 
 
-def escrever_automatos(nome_arquivo: str, automatos: list[Automato]):
+def escrever_automatos(nome_arquivo: Path, automatos: dict[str, Automato]):
     """
     Escreve uma lista de Automato() em um arquivo json
     """
     with open(nome_arquivo, "w") as arq:
-        automatos_dict = [A.to_dict() for A in automatos]
+        automatos_dict = {nome: A.to_dict() for nome, A in automatos.items()}
         json.dump(automatos_dict, arq, indent=4, ensure_ascii=False)
 
 
 def main():
-    automatos: list[Automato] = ler_automatos("automato.json")
-    automatos_sem_e: list[Automato] = []
+    # Get absolute path to the script's directory
+    cur_dir = Path(__file__).resolve().parent
 
-    for A in automatos:
+    input_file = cur_dir / "automato.json"
+    output_file = cur_dir / "automato_sem_e.json"
+
+    automatos: dict[str, Automato] = ler_automatos(input_file)
+    automatos_sem_e: dict[str, Automato] = dict()
+
+    for nome, A in automatos.items():
         B = eliminar_epsilon(A)
-        automatos_sem_e.append(B)
+        automatos_sem_e[nome] = B
 
-        print(f"Autômato antes: {A}\n")
-        print(f"Autômato depois: {B}")
+        print(f"Autômato '{nome}' antes: {A}\n")
+        print(f"Autômato '{nome}' depois: {B}")
 
         print("\n---\n")
 
-    escrever_automatos("automato_sem_e.json", automatos_sem_e)
+    escrever_automatos(output_file, automatos_sem_e)
 
 
 if __name__ == "__main__":
