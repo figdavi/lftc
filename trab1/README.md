@@ -28,8 +28,8 @@ Converter um autômato finito não-determinístico (AFND) com epsilon-transiçõ
 Automato: 5-tupla (Q: conjunto finito de estados, Σ: Alfabeto, δ: função de transição, q₀: estado inicial, F: conjunto de estados finais)
 
 ```json
-[
-    {
+{
+    "Automato-1": {
         "estados": [1, 2, 3],
         "alfabeto": ["a", "b", "ε"],
         "inicial": 1,
@@ -41,5 +41,5 @@ Automato: 5-tupla (Q: conjunto finito de estados, Σ: Alfabeto, δ: função de 
             [3, "b", 2]
         ]
     }
-]
+}
 ```
