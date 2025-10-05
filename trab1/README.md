@@ -6,9 +6,11 @@
 
 Converter um autômato finito não-determinístico (AFND) com epsilon-transições para um AFND sem epsilon-transições.
 
-## Mapeamento da solução
+## Solução
 
 ![alt text](images/Introdução%20à%20Teoria%20da%20Computação%20%20(Pág.%2057)%20-%20Michael%20Sipser.png)
+
+- Ref: Introdução à Teoria da Computação, 3 ed. (Pág. 57) - Michael Sipser.
 
 ### Passos
 
