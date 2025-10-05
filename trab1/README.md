@@ -13,9 +13,12 @@ Converter um autômato finito não-determinístico (AFND) com epsilon-transiçõ
 ### Passos
 
 1. Se 'a' ∈ Σ, δ(q₁, ε) = q₂ e δ(q₂, 'a') = q₃ , acrescentaremos uma transição de q₁ para q₃  com 'a';
+
 ![alt text](images/passo_1.png)
 
+
 2. Se δ(q₁, ε) = q₂ e q₂ ∈ F, acrescentamos q₁ a F.
+
 ![alt text](images/passo_2.png)
 
 ### Representação do autômato
