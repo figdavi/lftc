@@ -71,12 +71,15 @@ def eliminar_epsilon(A: Automato) -> Automato:
     Retorna um novo Automato() A' sem ε-transições
     """
 
-    # Os passos irão alterar apenas transições e finais:
+    # Obs: Os passos irão alterar apenas transições e finais.
 
-    # Calcular ε-fecho de todos estados
+    # Calcular E(q)
     #
     # Ex:
     # E({1}) = {1, 2, 3}
+    # E({2}) = {2, 3}
+    #
+    # fecho_total = {1: {1, 2, 3}, 2: {2, 3}}
     fecho_total: dict[int, set[int]] = {
         estado: calcular_e_fecho(A, estado) for estado in A.estados
     }
