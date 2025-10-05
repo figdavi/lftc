@@ -1,6 +1,6 @@
 # Trabalho de implementação 1
 
-- Alunos: Davi Figueiredo e Davi Coutinho
+- Alunos: Davi Figueiredo e [Davi Coutinho](https://github.com/Davi394)
 
 ## Tema
 
