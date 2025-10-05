@@ -77,14 +77,16 @@ def eliminar_epsilon(A: Automato) -> Automato:
     #
     # Ex:
     # E({1}) = {1, 2, 3}
-    fecho_total: list[set[int]] = [calcular_e_fecho(A, estado) for estado in A.estados]
+    fecho_total: dict[int, set[int]] = {
+        estado: calcular_e_fecho(A, estado) for estado in A.estados
+    }
 
     # Calcular novos finais
     # (Passo 2): Se δ(p, ε) = q e q ∈ F, acrescentamos p a F
     novos_finais: set[int] = set()
 
-    for i, p in enumerate(A.estados):
-        for q in fecho_total[i]:
+    for p in A.estados:
+        for q in fecho_total[p]:
             if q in A.finais:
                 novos_finais.add(p)
 
@@ -94,11 +96,11 @@ def eliminar_epsilon(A: Automato) -> Automato:
     # Calcular novas transições (sem ε)
     # (Passo 1): Se 'a' ∈ Σ, δ(q₁, ε) = q₂ e δ(q₂, 'a') = q₃ , acrescentaremos uma transição de q₁ para q₃  com 'a';
     novas_transicoes: set[tuple[int, str, int]] = set()
-    for i, p in enumerate(A.estados):
+    for p in A.estados:
         for char in alfabeto_sem_e:
             destinos: set[int] = set()
             # Para cada estado em E(p):
-            for q in fecho_total[i]:
+            for q in fecho_total[p]:
                 for origem, simbolo, destino in A.transicoes:
                     if origem == q and simbolo == char:
                         destinos.add(destino)
