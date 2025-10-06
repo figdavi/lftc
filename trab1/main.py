@@ -85,15 +85,6 @@ def eliminar_epsilon(A: Automato) -> Automato:
         estado: calcular_e_fecho(A, estado) for estado in A.estados
     }
 
-    # Calcular novos finais
-    # (Passo 2): Se δ(p, ε) = q e q ∈ F, acrescentamos p a F
-    novos_finais: set[int] = set()
-
-    for p in A.estados:
-        for q in fecho_total[p]:
-            if q in A.finais:
-                novos_finais.add(p)
-
     # Alfabeto sem 'E'
     alfabeto_sem_e: set[str] = {s for (_, s, _) in A.transicoes if s != "ε"}
 
@@ -111,6 +102,15 @@ def eliminar_epsilon(A: Automato) -> Automato:
 
             for destino in destinos:
                 novas_transicoes.add((p, char, destino))
+
+    # Calcular novos finais
+    # (Passo 2): Se δ(p, ε) = q e q ∈ F, acrescentamos p a F
+    novos_finais: set[int] = set()
+
+    for p in A.estados:
+        for q in fecho_total[p]:
+            if q in A.finais:
+                novos_finais.add(p)
 
     return Automato(
         A.estados, alfabeto_sem_e, A.inicial, novos_finais, novas_transicoes
