@@ -101,7 +101,8 @@ def eliminar_epsilon(A: Automato) -> Automato:
                         destinos.add(destino)
 
             for destino in destinos:
-                novas_transicoes.add((p, char, destino))
+                for r in fecho_total[destino]:
+                    novas_transicoes.add((p, char, r))
 
     # Calcular novos finais
     # (Passo 2): Se δ(p, ε) = q e q ∈ F, acrescentamos p a F
