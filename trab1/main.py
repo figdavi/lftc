@@ -2,6 +2,10 @@ import json
 from typing import Any
 from pathlib import Path
 
+# ============================================================
+# CLASSE PRINCIPAL: Representação de um Autômato Finito Não Determinístico (AFND)
+# ============================================================
+
 
 class Automato:
     def __init__(
@@ -19,18 +23,23 @@ class Automato:
         self.transicoes = transicoes  # conjunto de tupla (origem, simbolo, destino)
 
     def __str__(self) -> str:
-        s = f"""
-    Estados: {self.estados}
-    Alfabeto: {self.alfabeto}
-    Inicial: {self.inicial}
-    Finais: {self.finais}
-    Transições:"""
-        for origem, simbolo, destino in self.transicoes:
+        """Retorna a representação textual do autômato."""
+        s = (
+            f"\nEstados: {self.estados}"
+            f"\nAlfabeto: {self.alfabeto}"
+            f"\nInicial: {self.inicial}"
+            f"\nFinais: {self.finais}"
+            f"\nTransições:"
+        )
+        for origem, simbolo, destino in sorted(self.transicoes):
             s += f"\n\tδ({origem}, '{simbolo}') → {destino}"
         return s
 
     def to_dict(self) -> dict[str, Any]:
-        # Como json não suporta set(), é necessário transformar tudo em list()
+        """
+        Converte o autômato para um dicionário compatível com JSON.
+        (Como JSON não suporta set(), convertemos tudo em list().)
+        """
         return {
             "estados": list(self.estados),
             "alfabeto": list(self.alfabeto),
@@ -42,96 +51,97 @@ class Automato:
 
 def calcular_e_fecho(A: Automato, estado: int) -> set[int]:
     """
-    Calcula o E(estado) do automato A
+    Retorna o ε-fecho do estado fornecido, ou seja, todos os estados
+    alcançáveis a partir dele usando exclusivamente transições ε.
+
+    Exemplo:
+        δ(1, ε) → 2
+        δ(2, ε) → 3
+        Então: ε(1) = {1, 2, 3}
     """
-
-    # The ε-closure of a state s is the set of states you can reach from s using only (0 or more) ε-transitions.
-
-    # Ex:
-    # δ(1, ε) -> 2
-    # δ(2, ε) -> 3
-    #
-    # ε(1) = 1, 2, 3
 
     fecho = {estado}
     pilha = [estado]
 
+    # Percorre estados conectados por transições ε
     while pilha:
-        # estado
         atual = pilha.pop()
         for origem, simbolo, destino in A.transicoes:
-            # Se origem da transição é a partir do estado atual, utiliza epsilon e destino ainda não foi visitado:
             if origem == atual and simbolo == "ε" and destino not in fecho:
                 fecho.add(destino)
                 pilha.append(destino)
+
     return fecho
+
+
+# ============================================================
+# FUNÇÃO 2: Eliminação das transições ε de um AFND-ε
+# ============================================================
 
 
 def eliminar_epsilon(A: Automato) -> Automato:
     """
-    Retorna um novo Automato() A' sem ε-transições
+    Retorna um novo autômato sem transições ε, seguindo rigorosamente:
+      1. Se existe δ(p, ε*) = q e δ(q, a) = r, adiciona δ(p, a) = r.
+      2. Se existe δ(p, ε*) = f (com f ∈ F), então p vira final.
     """
 
-    # Obs: Os passos irão alterar apenas transições e finais.
+    EPS = "ε"
 
-    # Calcular E(q)
-    #
-    # Ex:
-    # E({1}) = {1, 2, 3}
-    # E({2}) = {2, 3}
-    #
-    # fecho_total = {1: {1, 2, 3}, 2: {2, 3}}
-    fecho_total: dict[int, set[int]] = {
-        estado: calcular_e_fecho(A, estado) for estado in A.estados
-    }
+    # Cálculo do ε-fecho de cada estado
+    fecho = {estado: calcular_e_fecho(A, estado) for estado in A.estados}
 
-    # Alfabeto sem 'E'
-    alfabeto_sem_e: set[str] = {s for (_, s, _) in A.transicoes if s != "ε"}
+    # Remove o símbolo ε do alfabeto original
+    alfabeto_sem_e = A.alfabeto - {EPS}
 
-    # Calcular novas transições (sem ε)
-    # (Passo 1): Se 'a' ∈ Σ, δ(q₁, ε) = q₂ e δ(q₂, 'a') = q₃ , acrescentaremos uma transição de q₁ para q₃  com 'a';
+    # (Passo 1): Gerar novas transições
     novas_transicoes: set[tuple[int, str, int]] = set()
     for p in A.estados:
-        for char in alfabeto_sem_e:
+        for simbolo in alfabeto_sem_e:
             destinos: set[int] = set()
-            # Para cada estado em E(p):
-            for q in fecho_total[p]:
-                for origem, simbolo, destino in A.transicoes:
-                    if origem == q and simbolo == char:
+            # Percorre cada q alcançável por ε a partir de p
+            for q in fecho[p]:
+                # Pega apenas as transições reais por 'simbolo'
+                for origem, simbolo_t, destino in A.transicoes:
+                    if origem == q and simbolo_t == simbolo:
                         destinos.add(destino)
 
-            for destino in destinos:
-                for r in fecho_total[destino]:
-                    novas_transicoes.add((p, char, r))
+            # Os destinos não precisam de fecho extra, basta conectar direto
+            for r in destinos:
+                novas_transicoes.add((p, simbolo, r))
 
-    # Calcular novos finais
-    # (Passo 2): Se δ(p, ε) = q e q ∈ F, acrescentamos p a F
-    novos_finais: set[int] = set()
-
-    for p in A.estados:
-        for q in fecho_total[p]:
-            if q in A.finais:
-                novos_finais.add(p)
+    # (Passo 2): Atualizar novos finais
+    # Estado q é um potencial estado final
+    novos_finais: set[int] = {p for p in A.estados for q in fecho[p] if q in A.finais}
 
     return Automato(
-        A.estados, alfabeto_sem_e, A.inicial, novos_finais, novas_transicoes
+        estados=A.estados,
+        alfabeto=alfabeto_sem_e,
+        inicial=A.inicial,
+        finais=novos_finais,
+        transicoes=novas_transicoes,
     )
+
+
+# ============================================================
+# FUNÇÕES 3 e 4: Leitura e Escrita de Arquivos JSON
+# ============================================================
 
 
 def ler_automatos(nome_arquivo: Path) -> dict[str, Automato]:
     """
-    Lê dos autômatos em json para um conjunto de Automato()
+    Lê autômatos de um arquivo JSON e retorna um dicionário {nome: Automato}.
     """
     with open(nome_arquivo, "r") as arq:
         dados = json.load(arq)
 
     automatos: dict[str, Automato] = {
         nome: Automato(
-            a["estados"],
-            a["alfabeto"],
-            a["inicial"],
-            a["finais"],
-            {tuple(transicao) for transicao in a["transicoes"]},
+            estados=set(a["estados"]),
+            alfabeto=set(a["alfabeto"]),
+            inicial=a["inicial"],
+            finais=set(a["finais"]),
+            transicoes={tuple(t) for t in a["transicoes"]},
         )
         for nome, a in dados.items()
     }
@@ -139,7 +149,7 @@ def ler_automatos(nome_arquivo: Path) -> dict[str, Automato]:
     return automatos
 
 
-def escrever_automatos(nome_arquivo: Path, automatos: dict[str, Automato]):
+def escrever_automatos(nome_arquivo: Path, automatos: dict[str, Automato]) -> None:
     """
     Escreve uma lista de Automato() em um arquivo json
     """
@@ -148,25 +158,33 @@ def escrever_automatos(nome_arquivo: Path, automatos: dict[str, Automato]):
         json.dump(automatos_dict, arq, indent=4, ensure_ascii=False)
 
 
-def main():
-    # Get absolute path to the script's directory
-    cur_dir = Path(__file__).resolve().parent
+# ============================================================
+# FUNÇÃO PRINCIPAL
+# ============================================================
 
+
+def main() -> None:
+    # Criar o caminho do arquivo de input e output
+    cur_dir = Path(__file__).resolve().parent
     input_file = cur_dir / "automato.json"
     output_file = cur_dir / "automato_sem_e.json"
 
     automatos: dict[str, Automato] = ler_automatos(input_file)
-    automatos_sem_e: dict[str, Automato] = dict()
+    automatos_sem_e: dict[str, Automato] = {}
 
+    # Processa cada autômato
     for nome, A in automatos.items():
         B = eliminar_epsilon(A)
         automatos_sem_e[nome] = B
 
-        print(f"Autômato '{nome}' antes: {A}\n")
-        print(f"Autômato '{nome}' depois: {B}")
+        print(f"\n=== Autômato '{nome}' antes da remoção de ε ===")
+        print(A)
+        print(f"\n=== Autômato '{nome}' depois da remoção de ε ===")
+        print(B)
 
-        print("\n---\n")
+        print("\n--------------------------------------------\n")
 
+    # Salva os novos autômatos em arquivo
     escrever_automatos(output_file, automatos_sem_e)
 
 
