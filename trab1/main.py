@@ -60,8 +60,8 @@ def calcular_e_fecho(A: Automato, estado: int) -> set[int]:
         Então: ε(1) = {1, 2, 3}
     """
 
-    fecho = {estado}
-    pilha = [estado]
+    fecho: set[int] = {estado}
+    pilha: list[int] = [estado]
 
     # Percorre estados conectados por transições ε
     while pilha:
