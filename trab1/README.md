@@ -1,6 +1,7 @@
 # Trabalho de implementação 1
 
-- Alunos: Davi Figueiredo e [Davi Coutinho](https://github.com/Davi394)
+- Alunos: [Davi Figueiredo](https://github.com/figdavi)
+  e [Davi Coutinho](https://github.com/Davi394)
 
 ## Tema
 
@@ -10,7 +11,7 @@ Converter um autômato finito não-determinístico (AFND) com epsilon-transiçõ
 
 ![alt text](<images/Introdução%20à%20Teoria%20da%20Computação%20%20(Pág.%2057)%20-%20Michael%20Sipser.png>)
 
-- Ref: Introdução à Teoria da Computação, 3 ed. (Pág. 57) - Michael Sipser.
+- Referência: Introdução à Teoria da Computação, 3 ed. (Pág. 57) - Michael Sipser.
 
 ### Passos
 
