@@ -89,7 +89,7 @@ def eliminar_epsilon(A: Automato) -> Automato:
     EPS = "ε"
 
     # Cálculo do ε-fecho de cada estado
-    fecho = {estado: calcular_e_fecho(A, estado) for estado in A.estados}
+    fecho: dict[int, set[int]] = {estado: calcular_e_fecho(A, estado) for estado in A.estados}
 
     # Remove o símbolo ε do alfabeto original
     alfabeto_sem_e = A.alfabeto - {EPS}
