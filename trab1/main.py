@@ -7,7 +7,7 @@ from pathlib import Path
 # ============================================================
 
 # Criar o caminho do arquivo de input e output
-EXAMPLES_DIR = Path(__file__).resolve().parent / "EXAMPLES"
+EXAMPLES_DIR = Path(__file__).resolve().parent / "examples"
 INPUT_FILE = EXAMPLES_DIR / "automato.json"
 OUTPUT_FILE = EXAMPLES_DIR / "automato_sem_e.json"
 
