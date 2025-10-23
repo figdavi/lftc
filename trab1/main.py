@@ -7,7 +7,7 @@ from pathlib import Path
 # ============================================================
 
 # Criar o caminho do arquivo de input e output
-cur_dir = Path(__file__).resolve().parent
+cur_dir = Path(__file__).resolve().parent / "examples"
 INPUT_FILE = cur_dir / "automato.json"
 OUTPUT_FILE = cur_dir / "automato_sem_e.json"
 
