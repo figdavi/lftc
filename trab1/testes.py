@@ -47,7 +47,7 @@ def test_automato_slide_7_pag_16():
     }
 
 
-def test_automato_prova():
+def test_automato_prova_2025_2():
     A = Automato(
         estados={1, 2, 3, 4, 5},
         alfabeto={"a", "b", "ε"},
@@ -82,3 +82,58 @@ def test_automato_prova():
         (5, "a", 1),
         (5, "b", 5),
     }
+
+
+def test_automato_prova_2021_2():
+    A = Automato(
+        estados={1, 2, 3, 4},
+        alfabeto={"a", "b", "ε"},
+        inicial=1,
+        finais={4},
+        transicoes={
+            (1, "a", 2),
+            (1, "b", 3),
+            (2, "ε", 3),
+            (2, "a", 2),
+            (3, "a", 3),
+            (3, "ε", 4),
+            (4, "b", 1),
+            (4, "b", 2),
+        },
+    )
+
+    B = eliminar_epsilon(A)
+
+    assert B.estados == A.estados
+    assert B.alfabeto == A.alfabeto - {"ε"}
+    assert B.finais == {2, 3, 4}
+    assert B.transicoes == {
+        (1, "a", 2),
+        (1, "b", 3),
+        (2, "a", 2),
+        (2, "a", 3),
+        (2, "b", 1),
+        (2, "b", 2),
+        (3, "a", 3),
+        (3, "b", 1),
+        (3, "b", 2),
+        (4, "b", 1),
+        (4, "b", 2),
+    }
+
+
+def test_automato_alfabeto_diferente():
+    A = Automato(
+        estados={1, 2},
+        alfabeto={"0", "1", "ε"},
+        inicial=1,
+        finais={2},
+        transicoes={(1, "0", 2), (2, "1", 1)},
+    )
+
+    B = eliminar_epsilon(A)
+
+    assert B.estados == A.estados
+    assert B.alfabeto == A.alfabeto - {"ε"}
+    assert B.finais == A.finais
+    assert B.transicoes == A.transicoes
