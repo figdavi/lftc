@@ -25,10 +25,10 @@ class Automato:
     def __str__(self) -> str:
         """Retorna a representação textual do autômato."""
         s = (
-            f"\nEstados: {self.estados}"
-            f"\nAlfabeto: {self.alfabeto}"
+            f"\nEstados: {sorted(self.estados)}"
+            f"\nAlfabeto: {sorted(self.alfabeto)}"
             f"\nInicial: {self.inicial}"
-            f"\nFinais: {self.finais}"
+            f"\nFinais: {sorted(self.finais)}"
             f"\nTransições:"
         )
         for origem, simbolo, destino in sorted(self.transicoes):
@@ -41,11 +41,11 @@ class Automato:
         (Como JSON não suporta set(), convertemos tudo em list().)
         """
         return {
-            "estados": list(self.estados),
-            "alfabeto": list(self.alfabeto),
+            "estados": sorted(self.estados),
+            "alfabeto": sorted(self.alfabeto),
             "inicial": self.inicial,
-            "finais": list(self.finais),
-            "transicoes": [list(t) for t in self.transicoes],
+            "finais": sorted(self.finais),
+            "transicoes": [list(t) for t in sorted(self.transicoes)],
         }
 
 
@@ -91,13 +91,13 @@ def eliminar_epsilon(A: Automato) -> Automato:
       2. Se existe δ(p, ε*) = f (com f ∈ F), então p vira final.
     """
 
-    EPS = "ε"
-
     # Cálculo do ε-fecho de cada estado
-    fecho: dict[int, set[int]] = {estado: calcular_e_fecho(A, estado) for estado in A.estados}
+    fecho: dict[int, set[int]] = {
+        estado: calcular_e_fecho(A, estado) for estado in A.estados
+    }
 
     # Remove o símbolo ε do alfabeto original
-    alfabeto_sem_e = A.alfabeto - {EPS}
+    alfabeto_sem_e = A.alfabeto - {"ε"}
 
     # (Passo 1): Gerar novas transições
     novas_transicoes: set[tuple[int, str, int]] = set()
@@ -160,7 +160,7 @@ def escrever_automatos(nome_arquivo: Path, automatos: dict[str, Automato]) -> No
     """
     with open(nome_arquivo, "w", encoding="utf-8") as arq:
         automatos_dict = {nome: A.to_dict() for nome, A in automatos.items()}
-        json.dump(automatos_dict, arq, indent=4, ensure_ascii=False)
+        json.dump(automatos_dict, arq, indent=4, ensure_ascii=False, sort_keys=True)
 
 
 # ============================================================
