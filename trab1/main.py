@@ -43,7 +43,7 @@ class Automato:
     def to_dict(self) -> dict[str, Any]:
         """
         Converte o autômato para um dicionário compatível com JSON.
-        (Como JSON não suporta set(), convertemos tudo em list().)
+        Como JSON não suporta set(), convertemos tudo em list() (o método sorted() retorna uma list()).
         """
         return {
             "estados": sorted(self.estados),
