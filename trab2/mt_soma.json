@@ -1,0 +1,22 @@
+{
+  "name": "MT_soma",
+  "blank": "_",
+  "initial_state": "q1",
+  "final_states": ["q4"],
+  "transitions": [
+    { "state": "q1", "read": "1", "next_state": "q2", "write": "X", "move": "R" },
+    { "state": "q1", "read": "$", "next_state": "q1", "write": "$", "move": "R" },
+    { "state": "q1", "read": "@", "next_state": "q4", "write": "@", "move": "L" },
+
+    { "state": "q2", "read": "1", "next_state": "q2", "write": "1", "move": "R" },
+    { "state": "q2", "read": "$", "next_state": "q2", "write": "$", "move": "R" },
+    { "state": "q2", "read": "@", "next_state": "q2", "write": "@", "move": "R" },
+    { "state": "q2", "read": "_", "next_state": "q3", "write": "1", "move": "L" },
+
+    { "state": "q3", "read": "1", "next_state": "q3", "write": "1", "move": "L" },
+    { "state": "q3", "read": "@", "next_state": "q3", "write": "@", "move": "L" },
+    { "state": "q3", "read": "$", "next_state": "q3", "write": "$", "move": "L" },
+    { "state": "q3", "read": "X", "next_state": "q1", "write": "X", "move": "R" }
+   
+  ]
+}

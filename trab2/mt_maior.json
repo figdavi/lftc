@@ -1,0 +1,25 @@
+{
+  "name": "MT_compara_maior",
+  "blank": "_",
+  "states": ["q1", "q2", "q3", "q4", "q5", "q6"],
+  "initial_state": "q1",
+  "final_states": ["q6"],
+  "transitions": [
+    { "state": "q1", "read": "1", "next_state": "q2", "write": "X", "move": "R" },
+    { "state": "q1", "read": "$", "next_state": "q6", "write": "$", "move": "R" },
+
+    { "state": "q2", "read": "1", "next_state": "q2", "write": "1", "move": "R" },
+    { "state": "q2", "read": "$", "next_state": "q3", "write": "$", "move": "R" },
+
+    { "state": "q3", "read": "1", "next_state": "q4", "write": "Y", "move": "L" },
+    { "state": "q3", "read": "Y", "next_state": "q3", "write": "Y", "move": "R" },
+    { "state": "q3", "read": "@", "next_state": "q5", "write": "@", "move": "R" },
+
+    { "state": "q4", "read": "$", "next_state": "q4", "write": "$", "move": "L" },
+    { "state": "q4", "read": "1", "next_state": "q4", "write": "1", "move": "L" },
+    { "state": "q4", "read": "X", "next_state": "q1", "write": "X", "move": "R" },
+    { "state": "q4", "read": "Y", "next_state": "q4", "write": "Y", "move": "L" },
+
+    { "state": "q5", "read": "_", "next_state": "q6", "write": "1", "move": "R" }
+  ]
+}
