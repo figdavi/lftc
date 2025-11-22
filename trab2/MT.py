@@ -4,8 +4,9 @@ import json
 # 1. Carregamento da Máquina de Turing
 # -----------------------------------------
 
+
 def carregar_maquina_de_arquivo(caminho_arquivo):
-    with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
+    with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
         configuracao_bruta = json.load(arquivo)
 
     simbolo_branco = configuracao_bruta["blank"]
@@ -16,7 +17,11 @@ def carregar_maquina_de_arquivo(caminho_arquivo):
     transicoes = {}
     for t in configuracao_bruta["transitions"]:
         chave = (t["state"], t["read"])  # (estado_atual, símbolo_lido)
-        valor = (t["next_state"], t["write"], t["move"])  # (próximo_estado, símbolo_escrito, movimento)
+        valor = (
+            t["next_state"],
+            t["write"],
+            t["move"],
+        )  # (próximo_estado, símbolo_escrito, movimento)
         transicoes[chave] = valor
 
     return {
@@ -24,13 +29,14 @@ def carregar_maquina_de_arquivo(caminho_arquivo):
         "estado_inicial": estado_inicial,
         "estados_finais": estados_finais,
         "transicoes": transicoes,
-        "nome": configuracao_bruta.get("name", "")
+        "nome": configuracao_bruta.get("name", ""),
     }
 
 
 # -----------------------------------------
 # 2. Exibição da configuração
 # -----------------------------------------
+
 
 def exibir_configuracao(fita, posicao_cabeca, estado_atual, simbolo_branco):
     # encontra o último símbolo não-branco
@@ -65,7 +71,10 @@ def exibir_configuracao(fita, posicao_cabeca, estado_atual, simbolo_branco):
 # 3. Execução da Máquina de Turing
 # -----------------------------------------
 
-def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado_mt.json"):
+
+def executar_maquina_turing(
+    entrada, configuracao, nome_arquivo_saida="resultado_mt.json"
+):
     simbolo_branco = configuracao["branco"]
     estado_atual = configuracao["estado_inicial"]
     estados_finais = configuracao["estados_finais"]
@@ -75,7 +84,11 @@ def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado
     estados_usados = set()
     alfabeto_usado = set()
 
-    for (estado, simbolo_lido), (novo_estado, simbolo_escrito, movimento) in transicoes.items():
+    for (estado, simbolo_lido), (
+        novo_estado,
+        simbolo_escrito,
+        movimento,
+    ) in transicoes.items():
         estados_usados.add(estado)
         estados_usados.add(novo_estado)
 
@@ -85,14 +98,16 @@ def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado
     # garante que o branco também está no alfabeto
     alfabeto_usado.add(simbolo_branco)
 
-    # fita com sobra 
+    # fita com sobra
     fita = list(entrada) + [simbolo_branco] * 10
     posicao_cabeca = 0
 
     passos = []  # armazena as configurações em ordem
 
     # registra a configuração inicial
-    passos.append(exibir_configuracao(fita, posicao_cabeca, estado_atual, simbolo_branco))
+    passos.append(
+        exibir_configuracao(fita, posicao_cabeca, estado_atual, simbolo_branco)
+    )
 
     numero_de_passos = 0
 
@@ -104,7 +119,9 @@ def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado
         # Se não existe transição definida, a MT "trava" e para
         if chave not in transicoes:
             # registra informação de erro no final do json
-            passos.append(f"Sem transição definida para {chave}. Execução interrompida.")
+            passos.append(
+                f"Sem transição definida para {chave}. Execução interrompida."
+            )
             break
 
         novo_estado, simbolo_escrito, movimento = transicoes[chave]
@@ -113,12 +130,12 @@ def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado
         fita[posicao_cabeca] = simbolo_escrito
 
         # Move a cabeça
-        if movimento == 'R':
+        if movimento == "R":
             posicao_cabeca += 1
             if posicao_cabeca == len(fita):
                 fita.append(simbolo_branco)
 
-        elif movimento == 'L':
+        elif movimento == "L":
             if posicao_cabeca == 0:
                 fita.insert(0, simbolo_branco)
                 # cabeça continua em 0 (agora sobre o novo branco)
@@ -132,7 +149,9 @@ def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado
         numero_de_passos += 1
 
         # registra a nova configuração
-        passos.append(exibir_configuracao(fita, posicao_cabeca, estado_atual, simbolo_branco))
+        passos.append(
+            exibir_configuracao(fita, posicao_cabeca, estado_atual, simbolo_branco)
+        )
 
     # remove brancos à direita e à esquerda
     fita_final = "".join(fita).strip(simbolo_branco)
@@ -146,13 +165,15 @@ def executar_maquina_turing(entrada, configuracao, nome_arquivo_saida="resultado
         "estado_final": estado_atual,
         "tape_alphabet": sorted(alfabeto_usado),
         "numero_de_passos": numero_de_passos,
-        "passos": passos
+        "passos": passos,
     }
 
     with open(nome_arquivo_saida, "w", encoding="utf-8") as arquivo:
         json.dump(saida, arquivo, ensure_ascii=False, indent=2)
 
-    print(f"Execução concluída. {numero_de_passos} passos salvos em '{nome_arquivo_saida}'.")
+    print(
+        f"Execução concluída. {numero_de_passos} passos salvos em '{nome_arquivo_saida}'."
+    )
 
     return fita_final
 
@@ -168,5 +189,7 @@ if __name__ == "__main__":
 
     entrada_inicial = "11$111@"
 
-    resultado = executar_maquina_turing(entrada_inicial, configuracao_mt, "resultado_mt.json")
+    resultado = executar_maquina_turing(
+        entrada_inicial, configuracao_mt, "resultado_mt.json"
+    )
     print("Resultado final na fita:", resultado)
