@@ -17,6 +17,5 @@
     { "state": "q3", "read": "@", "next_state": "q3", "write": "@", "move": "L" },
     { "state": "q3", "read": "$", "next_state": "q3", "write": "$", "move": "L" },
     { "state": "q3", "read": "X", "next_state": "q1", "write": "X", "move": "R" }
-   
   ]
 }
