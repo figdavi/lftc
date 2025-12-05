@@ -132,7 +132,7 @@ Simulador de Máquina de Turing.
 
 Para executar o código é necessário ter **Python 3.9+** ([Download](https://www.python.org/downloads/))
 
-1. Clone o repositório e vá para pasta `lftc/trab1`
+1. Clone o repositório e vá para pasta `lftc/trab2`
 
 ```bash
 git clone https://github.com/figdavi/lftc.git
